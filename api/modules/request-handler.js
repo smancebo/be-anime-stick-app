@@ -8,6 +8,7 @@ class Request {
 
         return new Promise((resolve, reject) => {
             const handleRequest = (err, res, body) => {
+                
                 if (err) {
                     reject(err);
                     return;
@@ -25,14 +26,29 @@ class Request {
             }
         })
     }
-    getImage(url) {
+    linkImage(url) {
         return new Promise((resolve, reject) => {
             cloudscraper.request({
-                method:'GET',
+                method: 'GET',
                 encoding: null,
                 url
             }, (err, res, body) => {
-                if(!err && res.statusCode === 200){
+                if (!err && res.statusCode === 200) { 
+                    resolve((body));
+                } else {
+                    reject(err);
+                }
+            })
+        })
+    }
+    getImage(url) {
+        return new Promise((resolve, reject) => {
+            cloudscraper.request({
+                method: 'GET',
+                encoding: null,
+                url
+            }, (err, res, body) => {
+                if (!err && res.statusCode === 200) {
                     const base64Buffer = new Buffer(body).toString('base64');
                     const contentType = res.headers['content-type'];
                     const data = `data:${contentType};base64,${base64Buffer}`;

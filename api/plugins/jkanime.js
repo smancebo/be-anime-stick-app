@@ -34,6 +34,11 @@ class JkAnime {
         return found;
     }
 
+    async image(url) {
+        const body = await request.linkImage(url);
+        return new Buffer(body);
+    }
+
     async getEpisodes(link) {
         const response = await request.get(link)
         const $ = cheerio.load(response.body);

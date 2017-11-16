@@ -13,5 +13,8 @@ router.get('/episodes', async (req, res) => {
 router.get('/view', async (req, res) => {
     res.json(await plugin.getEpisodeVideo(req.query.l))
 })
+router.get('/image', async (req, res) => {
+    res.end(await plugin.image(req.query.l), 'binary');
+})
 
 module.exports = router;
