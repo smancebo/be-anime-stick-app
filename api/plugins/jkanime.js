@@ -2,7 +2,7 @@ const request = require('../modules/request-handler');
 const phantomjs = require('phantomjs-prebuilt-that-works');
 const cheerio = require('cheerio');
 const path = require('path');
-
+const crypto = require('./util/crypto');
 class JkAnime {
     async search(str) {
         let strSearch = str.replace(/\s/g, '+')
@@ -16,31 +16,31 @@ class JkAnime {
             let anime = {};
             anime.id = found.length;
             anime.title = element.attr('title');
-            anime.link = element.attr('href');
-            anime.image = element.find('img').attr('src');
+            anime.link = crypto.encrypt(element.attr('href'));
+            anime.image = crypto.encrypt(element.find('img').attr('src'));
 
             found.push(anime);
         });
-        const parseImages = (results) => {
+        // const parseImages = (results) => {
            
-            const items = results.map(async (elem) => {
-                const { title, link, id, image } = elem;
-                return { title, link, id, image };
-            });
+        //     const items = results.map(async (elem) => {
+        //         const { title, link, id, image } = elem;
+        //         return { title, link, id, image };
+        //     });
 
-            return items;
-        }
-        found = await Promise.all(parseImages(found))
+        //     return items;
+        // }
+        //found = await Promise.all(parseImages(found))
         return found;
     }
 
     async image(url) {
-        const body = await request.linkImage(url);
+        const body = await request.linkImage(crypto.decrypt(url));
         return new Buffer(body);
     }
 
     async getEpisodes(link) {
-        const response = await request.get(link)
+        const response = await request.get(crypto.decrypt(link))
         const $ = cheerio.load(response.body);
 
         let episodes = [];
@@ -48,6 +48,7 @@ class JkAnime {
             const element = $(elem).find('a');
 
             let episode = {};
+            episode.id = episodes.length;
             episode.name = element.html().trim();
             episode.link = element.attr('href');
 
