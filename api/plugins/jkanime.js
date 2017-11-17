@@ -6,7 +6,9 @@ const crypto = require('./util/crypto');
 class JkAnime {
     async search(str) {
         let strSearch = str.replace(/\s/g, '+')
-        const response = await request.get(`http://www.jkanime.co/Buscar?s=${strSearch}`);
+        const response = await request.get(`http://www.jkanime.co/Buscar?s=${strSearch}`).catch((err) => {
+            throw err;
+        });
         const $ = cheerio.load(response.body);
 
         let found = [];
@@ -50,7 +52,7 @@ class JkAnime {
             let episode = {};
             episode.id = episodes.length;
             episode.name = element.html().trim();
-            episode.link = element.attr('href');
+            episode.link = crypto.encrypt(element.attr('href'));
 
             episodes.push(episode);
         });
@@ -59,7 +61,7 @@ class JkAnime {
     }
 
     async getEpisodeVideo(link) {
-        const response = await request.get(link);
+        const response = await request.get(crypto.decrypt(link));
         const $ = cheerio.load(response.body);
 
         const frameUrl = $('iframe', '#player').attr('src');

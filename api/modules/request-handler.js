@@ -12,6 +12,7 @@ class Request {
                 if (err) {
                     reject(err);
                     return;
+                    
                 } else {
                     resolve({
                         res,
@@ -55,6 +56,7 @@ class Request {
                     resolve(data);
                 } else {
                     reject(err);
+                    throw err;
                 }
             })
         })

@@ -1,4 +1,8 @@
 {
+  "scripts" : {
+    "start" : "nodemon main.js",
+    "debug" : "nodemon --inspect main.js"
+  },
   "dependencies": {
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
