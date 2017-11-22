@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const plugin = new (require('./plugins/jkanime'))
 
-router.get('/search/:str', async (req, res) => {
+router.get('/search/:str?', async (req, res) => {
     res.json(await plugin.search(req.params.str).catch((err) => {
         res.json(err);
     }));
