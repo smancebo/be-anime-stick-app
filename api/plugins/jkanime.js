@@ -1,8 +1,11 @@
+
+
 const request = require('../modules/request-handler');
 const phantomjs = require('phantomjs-prebuilt-that-works');
 const cheerio = require('cheerio');
 const path = require('path');
 const crypto = require('./util/crypto');
+const ImageCache = require('./util/ImageCache');
 class JkAnime {
     async search(str) {
         let strSearch = str.replace(/\s/g, '+')
@@ -37,8 +40,20 @@ class JkAnime {
     }
 
     async image(url) {
-        const body = await request.linkImage(crypto.decrypt(url));
-        return new Buffer(body);
+        const defUrl = crypto.decrypt(url);
+        const filename = path.basename(defUrl);
+        let imgBuffer = null;
+
+        const cacheBuffer = await ImageCache.Get(path.basename(defUrl));
+        
+        if(cacheBuffer === undefined) {
+            const body = await request.linkImage(crypto.decrypt(url));
+            imgBuffer = new Buffer(body);
+            ImageCache.Set(filename, imgBuffer);
+            return imgBuffer;
+        }
+        
+        return new Buffer(cacheBuffer);
     }
 
     async getEpisodes(link) {
