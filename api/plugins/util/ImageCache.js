@@ -9,7 +9,7 @@ class ImageCache {
         const filePath = path.resolve(path.join(dirname,imgBase, name))
     
         return new Promise((resolve, reject) => {
-            fs.appendFile(filePath, buffer, (err) => {
+            fs.writeFile(filePath, buffer, (err) => {
                 if(err){
                     resolve(undefined);
                     return ;
