@@ -1,6 +1,11 @@
 
 const router = require('express').Router();
+const accountController = require('./account/controller');
+
 const plugin = new (require('./plugins/jkanime'))
+
+
+router.use('/account', accountController);
 
 router.get('/search/:str?', async (req, res) => {
     res.json(await plugin.search(req.params.str).catch((err) => {
