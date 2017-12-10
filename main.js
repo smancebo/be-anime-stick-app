@@ -15,4 +15,4 @@ app.use(bodyParser.urlencoded({
 
 app.use('/api', api);
 
-app.listen(4000, () => {console.log('service running on port 4000')})
+app.listen(80, () => {console.log('service running on port 80')})
