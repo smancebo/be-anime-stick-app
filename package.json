@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "nodemon main.js",
+    "start": "node main.js",
     "debug": "nodemon --inspect main.js"
   },
   "dependencies": {
