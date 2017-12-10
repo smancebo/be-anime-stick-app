@@ -1,6 +1,7 @@
 
 const router = require('express').Router();
 const plugin = new (require('./plugins/jkanime'))
+const request = require('request');
 
 router.get('/search/:str?', async (req, res) => {
     res.json(await plugin.search(req.params.str).catch((err) => {
@@ -18,6 +19,11 @@ router.get('/view/:episode', async (req, res) => {
 router.get('/image/:img', async (req, res) => {
     res.writeHead(200, {'Content-type' : 'image/jpg'})
     res.end(await plugin.image(req.params.img), 'binary');
+})
+
+router.get('/watch', (req, res) => {
+    const { video } = req.query;
+    request(video).pipe(res)
 })
 
 module.exports = router;
