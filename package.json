@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "nodemon main.js",
+    "start": "node main.js",
     "debug": "nodemon --inspect main.js"
   },
   "dependencies": {
@@ -14,5 +14,8 @@
     "morgan": "^1.9.0",
     "phantomjs-prebuilt-that-works": "^3.0.1",
     "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.5"
   }
 }

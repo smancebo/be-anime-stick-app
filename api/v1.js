@@ -3,6 +3,7 @@ const router = require('express').Router();
 const accountController = require('./account/controller');
 
 const plugin = new (require('./plugins/jkanime'))
+const request = require('request');
 
 
 router.use('/account', accountController);
@@ -23,6 +24,11 @@ router.get('/view/:episode', async (req, res) => {
 router.get('/image/:img', async (req, res) => {
     res.writeHead(200, {'Content-type' : 'image/jpg'})
     res.end(await plugin.image(req.params.img), 'binary');
+})
+
+router.get('/watch', (req, res) => {
+    const { video } = req.query;
+    request(video).pipe(res)
 })
 
 module.exports = router;
