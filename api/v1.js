@@ -28,7 +28,9 @@ router.get('/image/:img', async (req, res) => {
 
 router.get('/watch', (req, res) => {
     const { video } = req.query;
-    request(video).pipe(res)
+    request(video).pipe(res).on('error', (e) => {
+        console.log(e)
+    })
 })
 
 module.exports = router;
