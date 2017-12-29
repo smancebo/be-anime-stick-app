@@ -22,14 +22,15 @@ page.onInitialized = function () {
         delete window._phantom;
     });
 };
+page.onError = function(msg, trace) {
+   return;
+}
 page.open(videoUrl, settings, function (status) {
     if (status === "success") {
 
         var a = page.evaluate(function () {
             return {
-                decoded_id: document.getElementById('streamurl').innerHTML,
-                title: document.querySelector('meta[name="og:title"],' +
-                    'meta[name=description]').content
+                decoded_id: document.getElementById('streamurl').innerHTML
             };
             
         });
