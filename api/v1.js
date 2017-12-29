@@ -5,6 +5,7 @@ const accountController = require('./account/controller');
 const plugin = new (require('./plugins/jkanime'))
 const request = require('request');
 const fs = require('fs');
+const remote = require('remote-file-size');
 
 
 router.use('/account', accountController);
@@ -34,6 +35,14 @@ router.get('/watch', (req, res) => {
         console.log(e)
     })
 })
+
+router.get('/size', (req, res) => {
+    const {video} = req.query;
+    remote(video, (err, o) => {
+        res.json({size: o});
+    })
+
+});
 
 router.get('/video', (req, res) => {
     const { video } = req.query;

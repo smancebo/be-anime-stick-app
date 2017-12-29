@@ -101,7 +101,7 @@ class JkAnime {
                 const phantom = phantomjs.exec(phScript, openloadUrl);
                 phantom.stdout.on('data', (streamUrl) => {
                     const urlStr = streamUrl.toString().trim();
-                    vid.url = `http://openload.co/stream/${urlStr}?mime=true`;
+                    vid.url = `http://openload.co/stream/${urlStr}`;
                     resolve(vid);
                 });
             }
