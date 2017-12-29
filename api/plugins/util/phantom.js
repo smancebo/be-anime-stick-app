@@ -23,14 +23,14 @@ page.onInitialized = function () {
     });
 };
 page.onError = function(msg, trace) {
-   return;
+    //console.log(msg)
 }
 page.open(videoUrl, settings, function (status) {
     if (status === "success") {
 
         var a = page.evaluate(function () {
             return {
-                decoded_id: document.getElementById('streamurl').innerHTML
+                decoded_id: document.getElementById('streamuri').innerHTML
             };
             
         });
