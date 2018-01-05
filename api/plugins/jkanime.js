@@ -108,6 +108,36 @@ class JkAnime {
         });
     }
 
+    async getLastUpdates(){
+        try{
+            const response = await request.get('http://www.jkanime.co').catch((err) => {
+                throw err;
+            });
+
+            const $ = cheerio.load(response.body);
+            let found = [];
+            $('.last_episodes_items').each((i, elem) => {
+                let anime = {};
+                const element = $(elem);
+                const reg = new RegExp(/background:\surl\('(.+)'\)/);
+                const image = reg.exec(element.find('.thumbnail-recent_home').attr('style'))[1];
+
+                anime.id = found.length;
+                anime.name = element.find('.name').find('a').text();
+                anime.link = crypto.encrypt(element.find('.name').find('a').attr('href'));
+                anime.image = crypto.encrypt(image);
+                anime.episode = element.find('.time').html();
+
+                found.push(anime);
+            })
+
+            return found;
+        }
+        catch (ex){
+            return [];
+        }
+    }
+
     async getEpisodeOpenload(link){
         const response = await request.get(link);
         const $ = cheerio.load(response.body);

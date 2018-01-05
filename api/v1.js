@@ -36,20 +36,23 @@ router.get('/watch', (req, res) => {
     })
 })
 
-router.get('/size', (req, res) => {
-    const {video} = req.query;
-    remote(video, (err, o) => {
-        res.json({size: o});
-    })
-
-});
-
-router.get('/openload', async (req,res) => {
-    const {video} = req.query;
-    const url = await plugin.getEpisodeOpenload(video);
-
-    res.end(url)
+router.get('/last/episodes', async (req,res) => {
+    res.json(await plugin.getLastUpdates())
 })
+// router.get('/size', (req, res) => {
+//     const {video} = req.query;
+//     remote(video, (err, o) => {
+//         res.json({size: o});
+//     })
+
+// });
+
+// router.get('/openload', async (req,res) => {
+//     const {video} = req.query;
+//     const url = await plugin.getEpisodeOpenload(video);
+
+//     res.end(url)
+// })
 
 router.get('/video', (req, res) => {
     const { video } = req.query;
