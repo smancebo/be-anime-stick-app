@@ -44,6 +44,13 @@ router.get('/size', (req, res) => {
 
 });
 
+router.get('/openload', async (req,res) => {
+    const {video} = req.query;
+    const url = await plugin.getEpisodeOpenload(video);
+
+    res.end(url)
+})
+
 router.get('/video', (req, res) => {
     const { video } = req.query;
     const name = `${new Date().getTime()}.mp4`;

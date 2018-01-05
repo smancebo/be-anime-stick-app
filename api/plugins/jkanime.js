@@ -107,6 +107,14 @@ class JkAnime {
             }
         });
     }
+
+    async getEpisodeOpenload(link){
+        const response = await request.get(link);
+        const $ = cheerio.load(response.body);
+        const url = $('#streamurj').html();
+        return url;
+
+    }
 }
 
 module.exports = JkAnime;
