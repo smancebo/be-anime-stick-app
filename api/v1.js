@@ -47,12 +47,15 @@ router.get('/last/episodes', async (req,res) => {
 
 // });
 
-// router.get('/openload', async (req,res) => {
-//     const {video} = req.query;
-//     const url = await plugin.getEpisodeOpenload(video);
-
-//     res.end(url)
-// })
+router.get('/openload', async (req,res) => {
+    const {video} = req.query;
+    request({
+        followAllRedirects: true,
+        timeout: 3000,
+        url: video,
+        method: 'GET'
+    }).pipe(res);   
+})
 
 router.get('/video', (req, res) => {
     const { video } = req.query;

@@ -61,6 +61,18 @@ class Request {
             })
         })
     }
+    withOptions(options){
+        return new Promise((resolve, reject) => {
+            request(options, (err, response, body) => {
+                if(err){
+                    reject(err);
+                }
+                 else {
+                     resolve({response, body});
+                 }
+            })
+        })
+    }
 }
 
 

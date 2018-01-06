@@ -1,6 +1,7 @@
 
 
 const request = require('../modules/request-handler');
+const r = require('request');
 const phantomjs = require('phantomjs-prebuilt-that-works');
 const cheerio = require('cheerio');
 const path = require('path');
@@ -93,7 +94,18 @@ class JkAnime {
             if (video.length > 0) {
                 //we found a video tag
                 vid.url = video.find('source').attr('src');
-                resolve(vid);
+                if (vid.url.indexOf('googleusercontent') !== -1){
+                    const phScript = path.join(__dirname, 'util', 'phantom-google.js');
+                    const phantom = phantomjs.exec(phScript, vid.url);
+                    phantom.stdout.on('data', (streamUrl) => {
+                        const urlStr = streamUrl.toString().trim();
+                        vid.url = `http://openload.co/stream/${urlStr}`;
+                        resolve(vid);
+                    });
+                }else{
+                    resolve(vid);
+                }
+                
 
             } else { //openload
                 const openloadUrl = $frame('iframe', '#amzp').attr('src');
@@ -139,10 +151,16 @@ class JkAnime {
     }
 
     async getEpisodeOpenload(link){
-        const response = await request.get(link);
-        const $ = cheerio.load(response.body);
-        const url = $('#streamurj').html();
-        return url;
+        return request.withOptions({
+            followAllRedirects: true,
+            timeout: 3000,
+            url: link
+        })
+
+       
+        // const $ = cheerio.load(response.body);
+        // const url = $('#streamurj').html();
+        // return url;
 
     }
 }
