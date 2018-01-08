@@ -94,17 +94,18 @@ class JkAnime {
             if (video.length > 0) {
                 //we found a video tag
                 vid.url = video.find('source').attr('src');
-                if (vid.url.indexOf('googleusercontent') !== -1){
-                    const phScript = path.join(__dirname, 'util', 'phantom-google.js');
-                    const phantom = phantomjs.exec(phScript, vid.url);
-                    phantom.stdout.on('data', (streamUrl) => {
-                        const urlStr = streamUrl.toString().trim();
-                        vid.url = `http://openload.co/stream/${urlStr}`;
-                        resolve(vid);
-                    });
-                }else{
-                    resolve(vid);
-                }
+                resolve(vid);
+                // if (vid.url.indexOf('googleusercontent') !== -1){
+                //     const phScript = path.join(__dirname, 'util', 'phantom-google.js');
+                //     const phantom = phantomjs.exec(phScript, vid.url);
+                //     phantom.stdout.on('data', (streamUrl) => {
+                //         const urlStr = streamUrl.toString().trim();
+                //         vid.url = `http://openload.co/stream/${urlStr}`;
+                //         resolve(vid);
+                //     });
+                // }else{
+                //     resolve(vid);
+                // }
                 
 
             } else { //openload
