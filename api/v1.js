@@ -11,6 +11,7 @@ const remote = require('remote-file-size');
 router.use('/account', accountController);
 
 router.get('/search/:str?', async (req, res) => {
+    
     res.json(await plugin.search(req.params.str).catch((err) => {
         res.json(err);
     }));
@@ -67,7 +68,11 @@ router.get('/video', (req, res) => {
     //    res.writeHead(200, {'Content-Type' : 'video/mp4'})
     //    res.send(chunk);
     // })
-    request(video).pipe(videoFile);
+    request({
+        method: 'GET',
+        jar: true,
+        url: video
+    }).pipe(videoFile);
     videoFile.on('pipe', () => {
         console.log('someone is piping')
     });
