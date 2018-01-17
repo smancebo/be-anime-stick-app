@@ -27,19 +27,33 @@ class Request {
             }
         })
     }
-    linkImage(url) {
+    linkImage(url, not_cloudfare) {
+
+        not_cloudfare = not_cloudfare || false
+        
+
         return new Promise((resolve, reject) => {
-            cloudscraper.request({
-                method: 'GET',
-                encoding: null,
-                url
-            }, (err, res, body) => {
-                if (!err && res.statusCode === 200) { 
+            const callback = (err, res, body) => {
+                if (!err && res.statusCode === 200) {
                     resolve((body));
                 } else {
                     reject(err);
                 }
-            })
+            }
+            if(not_cloudfare){
+                request({
+                    method: 'GET',
+                    encoding: null,
+                    url
+                }, callback)
+            } else {
+                cloudscraper.request({
+                    method: 'GET',
+                    encoding: null,
+                    url
+                }, callback)
+            }
+           
         })
     }
     getImage(url) {

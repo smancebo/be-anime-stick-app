@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const accountController = require('./account/controller');
 
-const plugin = new (require('./plugins/jkanime'))
+const plugin = new (require('./plugins/animeflv'))
 const request = require('request');
 const fs = require('fs');
 const remote = require('remote-file-size');
