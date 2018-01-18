@@ -27,6 +27,24 @@ class Request {
             }
         })
     }
+    pureGet(url){
+        return new Promise((resolve, reject) => {
+            const handleRequest = (err, res, body) => {
+
+                if (err) {
+                    reject(err);
+                    return;
+
+                } else {
+                    resolve({
+                        res,
+                        body
+                    });
+                }
+            }
+            request.get(url, handleRequest);
+        });
+    }
     linkImage(url, not_cloudfare) {
 
         not_cloudfare = not_cloudfare || false

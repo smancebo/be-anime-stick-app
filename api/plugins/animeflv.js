@@ -1,5 +1,3 @@
-
-
 const request = require('../modules/request-handler');
 const r = require('request');
 const phantomjs = require('phantomjs-prebuilt-that-works');
@@ -8,13 +6,14 @@ const path = require('path');
 const crypto = require('./util/crypto');
 const ImageCache = require('./util/ImageCache');
 const baseUrl = 'http://www.animeflv.net';
+const Resolver = require('./util/video-resolver/resolver');
 class AnimeFLV {
-    
+
 
     async search(str) {
         //TODO: Add pagination from source
         let strSearch = str.replace(/\s/g, '+')
-        const response = await request.get(`http://www.animeflv.net/browse?q=${strSearch}`, true).catch((err) => {
+        const response = await request.get(`${baseUrl}/browse?q=${strSearch}`, true).catch((err) => {
             throw err;
         });
         const $ = cheerio.load(response.body);
@@ -35,7 +34,7 @@ class AnimeFLV {
             found.push(anime);
         });
         // const parseImages = (results) => {
-           
+
         //     const items = results.map(async (elem) => {
         //         const { title, link, id, image } = elem;
         //         return { title, link, id, image };
@@ -53,58 +52,75 @@ class AnimeFLV {
         let imgBuffer = null;
 
         const cacheBuffer = await ImageCache.Get(path.basename(defUrl));
-        
-        if(cacheBuffer === undefined) {
+
+        if (cacheBuffer === undefined) {
             const body = await request.linkImage(crypto.decrypt(url), true);
             imgBuffer = new Buffer(body);
             ImageCache.Set(filename, imgBuffer);
             return imgBuffer;
         }
-        
+
         return new Buffer(cacheBuffer);
     }
 
     async getEpisodes(link) {
         const response = await request.get(crypto.decrypt(link))
         const $ = cheerio.load(response.body);
-
+        const listEpisode = $(".ListEpisodes > li");
+        const listCaps = $(".ListCaps > li");
         let episodes = [];
-        $(".ListEpisodes > li").each((e, elem) => {
-            const element = $(elem).find('a');
+        if (listEpisode.length > 0) {
+            listEpisode.each((e, elem) => {
+                const element = $(elem).find('a');
 
-            let episode = {};
-            episode.id = episodes.length;
-            episode.name = element.text().trim();
-            episode.link = crypto.encrypt(`${baseUrl}${element.attr('href')}`);
+                let episode = {};
+                episode.id = episodes.length;
+                episode.name = element.text().trim();
+                episode.link = crypto.encrypt(`${baseUrl}${element.attr('href')}`);
 
-            episodes.push(episode);
-        });
+                episodes.push(episode);
+            });
+        } else {
+            listCaps.each((e, elem) => {
+                const element = $(elem).find('a');
+                let episode = {};
+                episode.id = episodes.length;
+                episode.name = element.find('p').text().trim();
+                episode.link = crypto.encrypt(`${baseUrl}${element.attr('href')}`)
+
+                episodes.push(episode)
+            })
+        }
 
         return episodes;
     }
 
     async getEpisodeVideo(link) {
 
-        return new Promise((resolve, reject) => {
-            const episodeUrl = crypto.decrypt(link)
-            console.log(episodeUrl)
+        const getSources = (l) => new Promise(async (resolve, reject) => {
+            const episodeUrl = crypto.decrypt(l).replace('http://', 'https://')
             const phScript = path.join(__dirname, 'util', 'phantom-animeflv.js');
             const phantom = phantomjs.exec(phScript, episodeUrl);
             phantom.stdout.on('data', (videoArray) => {
-
-                console.log(JSON.parse(videoArray))
-
-
-
-
-                resolve(videoArray);
+                resolve(JSON.parse(videoArray));
             });
         })
-       
+
+        const urls = await getSources(link);
+        const mediaResolver = new Resolver();
+        return mediaResolver.parseMediaSources(urls);
+
     }
 
-    async getLastUpdates(){
-        try{
+    getFlavorVideo(link){
+        
+        const mediaResolver = new Resolver();
+        return mediaResolver.getMedia(crypto.decrypt(link))
+        
+    }
+
+    async getLastUpdates() {
+        try {
             const response = await request.get(baseUrl).catch((err) => {
                 throw err;
             });
@@ -127,20 +143,19 @@ class AnimeFLV {
             })
 
             return found;
-        }
-        catch (ex){
+        } catch (ex) {
             return [];
         }
     }
 
-    async getEpisodeOpenload(link){
+    async getEpisodeOpenload(link) {
         return request.withOptions({
             followAllRedirects: true,
             timeout: 3000,
             url: link
         })
 
-       
+
         // const $ = cheerio.load(response.body);
         // const url = $('#streamurj').html();
         // return url;

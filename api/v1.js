@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const accountController = require('./account/controller');
 
-const plugin = new (require('./plugins/animeflv'))
+const PLUGINS =  (require('./plugins'))
 const request = require('request');
 const fs = require('fs');
 const remote = require('remote-file-size');
@@ -11,25 +11,33 @@ const remote = require('remote-file-size');
 router.use('/account', accountController);
 
 router.get('/search/:str?', async (req, res) => {
-    
+    const plugin = PLUGINS.get(req);
     res.json(await plugin.search(req.params.str).catch((err) => {
         res.json(err);
     }));
 });
 
 router.get('/episodes/:show', async (req, res) => {
+    const plugin = PLUGINS.get(req);
     res.json(await plugin.getEpisodes(req.params.show))
 })
 
 router.get('/view/:episode', async (req, res) => {
+    const plugin = PLUGINS.get(req);
     res.json(await plugin.getEpisodeVideo(req.params.episode))
 })
 router.get('/image/:img', async (req, res) => {
+    const plugin = PLUGINS.get(req);
     res.writeHead(200, { 'Content-type': 'image/jpg' })
     res.end(await plugin.image(req.params.img), 'binary');
 })
+router.get('/flavor/:link', async (req, res) => {
+    const plugin = PLUGINS.get(req);
+    res.json(await plugin.getFlavorVideo(req.params.link))
+})
 
 router.get('/watch', (req, res) => {
+   
     const { video } = req.query;
     res.writeHead(200, { 'Content-type': 'video/mp4' });
     request({
@@ -41,15 +49,13 @@ router.get('/watch', (req, res) => {
 })
 
 router.get('/last/episodes', async (req,res) => {
+    const plugin = PLUGINS.get(req);
     res.json(await plugin.getLastUpdates())
 })
-// router.get('/size', (req, res) => {
-//     const {video} = req.query;
-//     remote(video, (err, o) => {
-//         res.json({size: o});
-//     })
 
-// });
+router.get('/plugins', (req, res) => {
+    res.json(PLUGINS.getAvailablePlugins())
+})
 
 router.get('/openload', async (req,res) => {
     const {video} = req.query;
